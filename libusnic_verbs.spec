@@ -2,7 +2,7 @@
 
 Name: libusnic_verbs
 Version: 1.1.0.237
-Release: 2%{?dist}
+Release: 4%{?dist}
 Summary: Cisco Virtual NIC OpenFabrics Userspace Driver
 Group: System Environment/Libraries
 License: GPLv2 or BSD
@@ -66,6 +66,14 @@ rm -rf %{buildroot}
 %{_bindir}/*
 
 %changelog
+* Wed Sep 30 2015 Doug Ledford <dledford@redhat.com> - 1.1.0.237-4
+- Build against libnl3 again now that the UD RoCE bug is fixed
+- Related: bz1261028
+
+* Tue Sep 29 2015 Doug Ledford <dledford@redhat.com> - 1.1.0.237-3
+- Build against libnl instead of libnl3
+- Related: bz1177115
+
 * Fri Jan 23 2015 Doug Ledford <dledford@redhat.com> - 1.1.0.237-2
 - Some of the scripts are missing the execute bit, fix that
 - Clean up the check script to be more appropriate for in-box use
