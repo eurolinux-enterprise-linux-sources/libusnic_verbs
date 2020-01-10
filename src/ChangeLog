@@ -1,3 +1,0 @@
---------------- Version 2.0.0 ---------------
-October 2015
-        Change libusnic_verbs to be a dummy libibverbs plugin.

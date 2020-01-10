@@ -1,36 +1,31 @@
-%global lib_version 2.0.1
-%global tools_version 1.1.1.0
+%global lib_version 2.0.3
+%global tools_version 1.1.2.0
 
 Name: libusnic_verbs
 Version: %{lib_version}
-Release: 5%{?dist}
-Summary: Cisco Virtual NIC OpenFabrics Userspace Driver
+Release: 1%{?dist}
+Summary: Cisco Virtual NIC OpenFabrics Userspace shim/placeholder
 Group: System Environment/Libraries
 License: GPLv2 or BSD
 Url: http://cisco.com/
-Source0: https://github.com/cisco/libusnic_verbs/releases/download/v%{lib_version}/%{name}-%{lib_version}.tar.bz2
-Source1: https://github.com/cisco/usnic_tools/releases/download/v%{tools_version}/usnic-tools-%{tools_version}.tar.bz2
+Source0: https://github.com/cisco/usnic_tools/releases/download/v%{tools_version}/usnic-tools-%{tools_version}.tar.bz2
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires: libibverbs-devel >= 1.2.0, libfabric-devel >= 1.3.0
-BuildRequires: libnl3-devel, valgrind-devel
-%ifarch x86_64
-BuildRequires: infinipath-psm-devel >= 3.3
-%endif
 ExcludeArch: s390 s390x
 
 %description
-This is a dummy plugin for libibverbs for Cisco usNIC devices; its only
-purpose is to avoid spurious warning messages from libibverbs when it
-sees usNIC kernel devices.  Cisco usNIC functionality is delivered
-through libfabric (instead of libibverbs).
+This is now an empty package. Old libibverbs required a dummy plugin for
+Cisco usNIC devices, while the devices are actually handled via libfabric.
+The dummy plugin is no longer required, but we need to preserve package
+upgrade paths, so this empty package exists. You should never need to have
+this installed though.
 
 %package -n usnic-tools
+Version: %{tools_version}
 Summary: Simple utilities to test Cisco Virtual NIC operability
 Group: System Environment/Libraries
-Version: %{tools_version}
-Provides: libusnic_verbs-utils = 1.1.0.237-5
-Obsoletes: libusnic_verbs-utils < 1.1.0.237-5
-Requires: %{name} = %{lib_version}-%{release}
+BuildRequires: libfabric-devel >= 1.3.0
+Provides: libusnic_verbs-utils = %{version}
+Obsoletes: libusnic_verbs-utils < %{version}
 
 %description -n usnic-tools
 This package includes ibv_ud_pingpong modified to work with libusnic_verbs
@@ -38,40 +33,42 @@ devices and a few minor scripts for checking the versions of software
 installed on the machine and providing useful information to Cisco
 technical support.
 
+
 %prep
-%setup -q -a 1
+%setup -q -n usnic-tools-%{tools_version}
 
 %build
-%configure --with-release=%{version} --with-valgrind
-make %{?_smp_mflags}
-pushd usnic-tools-%{tools_version}
 %configure
-popd
 
 %install
 rm -rf %{buildroot}
 make DESTDIR=%{buildroot} install
-# remove unpackaged files from the buildroot
-rm -f %{buildroot}%{_libdir}/*.la %{buildroot}%{_libdir}/libusnic_verbs.so
-pushd usnic-tools-%{tools_version}
-make DESTDIR=%{buildroot} install
-popd
 
 %clean
 rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%{_libdir}/libusnic_verbs-rdmav2.so
-%{_sysconfdir}/libibverbs.d/usnic.driver
-%{license} LICENSE
-%doc AUTHORS VERSION ChangeLog
 
 %files -n usnic-tools
 %defattr(-,root,root,-)
 %{_bindir}/*
+%{_mandir}/man1/usnic*
 
 %changelog
+* Thu Nov 16 2017 Jarod Wilson <jarod@redhat.com>
+- Add back an empty libusnic_verbs main package to keep build system happy
+- Related: rhbz#1507612
+
+* Wed Nov 01 2017 Jarod Wilson <jarod@redhat.com>
+- Drop libusnic_verbs from package, obsoleted by rdma-core
+- Update to usnic-tools v1.1.2.0 upstream release
+- Fix upgrade paths with rdma-core
+- Resolves: rhbz#1507612
+
+* Thu Jul 13 2017 Jarod Wilson <jarod@redhat.com> - 2.0.3-1
+- Update to libusnic_verbs v2.0.3
+
 * Tue Mar 21 2017 Jarod Wilson <jarod@redhat.com> - 2.0.1-5
 - Update package description to more accurately reflect functionality
 - Resolves: bz1391995
