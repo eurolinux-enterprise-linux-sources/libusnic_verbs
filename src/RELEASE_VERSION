@@ -1,0 +1,6 @@
+#Auto Generated - Do not edit
+USNIC_VERSION=1.1.0
+USNIC_REL_DATE=08/14/14
+USNIC_SVN_BRANCH=https://savbu-sjc-svn.cisco.com/svnrepos/ca/branches/palo_drivers/palo_enic_linux_esx_main
+USNIC_SVN_REV=185830
+RPM_RELEASE=1

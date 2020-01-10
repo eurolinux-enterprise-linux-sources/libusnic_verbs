@@ -1,0 +1,143 @@
+--------------- Version 1.1.0 ---------------
+Aug 05 2014
+    Added vendor field in usNIC RPM metadata
+
+Jul 24 2014
+    Added capability reporting function.
+
+    The alloc_context routine will now return a structure specifying the
+    capabilities of the device and driver.  This is important so that Intel MPI
+    can detect whether the driver supports CQ sharing.
+
+Jul 23 2014
+    move usnic_ib_abi.h from libusnic_verbs to common directory so other
+    libraries may access it
+
+Jul 11 2014
+    Move license insertion routine into libusnic_verbs top level Makefile
+
+Jul 08 2014
+    Print local and remote addresses as IP instead of GIDs.
+
+    In addition, removed gid index in option as it is not needed, fixed a
+    compiling warning, and changed the latency measurement to time used for half
+    round trip.
+
+Jun 24 2014
+    Added a new vnic API to seperate devcmd initialization from
+    vnic_dev_register
+
+    Also added a fallback arugment for function vnic_dev_cmd_init(), which would
+    fallback to the original devcmd if devcmd2 resource is not present and
+    fallback is required.
+
+Jun 06 2014
+    ibv_devinfo command is not currently showing usnic firmware version
+
+May 07 2014
+    Change error return code to positive for certain functions.
+
+    For functions called by libibverbs APIs such as ibv_create_qp,
+    ibv_post_recv, changed error return code as positive. In addition, use
+    MACROs to differentiate functions in the same target in the Makefile.
+
+May 06 2014
+    Remove the limit for 4k MTU in usnic_udp_pingpong
+
+    Modified usnic_udp_pingpong to get MTU by querying the ethernet device
+    corresponding to the ibv device instead of calling ibv_query_port, which
+    always returns MTU size one of values in [256, 512, 1024, 2048, 4096].
+
+May 03 2014
+    USNIC: usnic rpm file name should have rhel version as enic's
+
+May 02 2014
+    Generate RELEASE_VERSION in source tarball to keep SVN information
+
+Apr 23 2014
+    Fixed usnic Makefile such that VPATH (out-of-srcdir) builds work again
+
+Apr 22 2014
+    Removed lingering TMP_VNIC_CMD_DIR variable
+
+Apr 22 2014
+    Libusnic makefile cleanup
+
+Apr 22 2014
+    Fixed a bug that ibv_devinfo command is not currently showing usnic firmware
+    version
+
+Apr 21 2014
+    Added ability to report packet and byte statistics from libusnic_verbs
+
+    If USNIC_QP_STATS is defined in environment, the ibv_destroy_qp() call will
+    print per-QP stastics to stdout. Packet count is number of IP packets sent,
+    and byte count is number of bytes send, counting IP headers (but not ether
+    headers)
+
+Apr 17 2014
+    Changed create_ah implemenation to use ioctl instead of libnl to query arp
+    entry.
+
+    Previous implementation of create_ah returns ENIOX when queried entry is in
+    FAILED state, which causes MPI to fail at initialization stage if the entry
+    enters into false FAILED state due to lost of ARP request/reply messages
+    caused by network congestion. This implemention uses ioctl API to avoid
+    dealing with kernel APR entry states explicitly and retries querying and
+    triggers ARP resolution no matter that the query for an entry fails or is
+    ongoing.
+
+Mar 26 2014
+    Fixed container_of re-definition warnings
+
+    Changed libusnic_verbs to have its very own shiny usnic_container_of macro,
+    and use that everywhere.
+
+Mar 21 2014
+    Bumped libusnic_verbs version number for changing transport format to ip/udp
+
+--------------- Version 1.0.2 ---------------
+Mar 20 2014
+    Fixed create_qp() failure when multiple contexts are created for a single
+    device
+
+    When an new context is created, check if the device is marked as udp
+    transport, meaning another ctx created on the device is enabled with udp.
+    If so, it is not neccessary to assign NULL function pointers for op struct
+    of this context. Otherwise, later invocation of create_qp() on this context
+    would fail since enable_udp routine assigns function pointers back to op
+    struct only when dev is marked as udp enabled.
+
+    In addition, pthread_mutex_init call is added for usnic_context.vf_lst_lock.
+
+Mar 13 2014
+    Added usnic_udp_pingpong program that works on libusnic_verbs udp
+    transport.
+
+    This commit includes a usnic_udp_pingpong program modifed from
+    ibv_ud_pingpong in libibverbs in the package. This program works with
+    libusnic_verbs udp transport.
+
+Mar 13 2014
+    Fixed compiling errors and warnings introduced by the vnic_rq changes
+
+    Included <stdbool.h> in kcompat.h file in order for libusnic_verbs to
+    compile successfully. Otherwise, bool/true/false are not defined. Also
+    fixed unused arguments warnings.
+
+Mar 11 2014
+    Added an m4 empty folder into repository to fix an erorr when running
+    autogen.sh
+
+Mar 10 2014
+    Added libusnic_verbs routability support with udp header format
+
+    Usnic now uses udp/ip instead layer 2 with 8915 ether type as the
+    transport header format.
+    Configuration parameter --with-8915 is used to switch between two
+    transport format for different builds.
+    Enabled routability support by implementing destination route lookup
+    and ARP resolution in function ibv_create_ah().
+    Enabled usnic verbs extension for applications to bypass libibverbs
+    to enable certain features, including enabling UDP and getting
+    transport packet header length.

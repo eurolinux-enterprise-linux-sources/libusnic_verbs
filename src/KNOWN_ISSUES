@@ -1,0 +1,71 @@
+Linux userspace driver for the usNIC feature of the Cisco VIC SR-IOV
+Ethernet NIC
+=============================
+
+Known issues:
+=============
+
+ibv_devinfo (i.e., ibv_query_device() verbs API) reports usNIC devices
+as iWARP (i.e., IBV_NODE_RNIC).
+-----------------------------------------------------------------
+Symptom: 
+Running the ibv_devinfo(1) command (which uses the ibv_query_device(3)
+API) says that all usNIC devices are of type "iWARP":
+
+$ ibv_devinfo
+hca_id: usnic_0
+        transport:                      iWARP (1)
+...etc.
+
+Root cause: 
+The Linux Verbs API currently only allows devices to report themselves
+as an InfiniBand HCA, an InfiniBand switch, an InfiniBand router, or
+an iWARP NIC.  For this realase, the Cisco usNIC team decided to
+report usNIC devices as iWARP NICs simply because of the limited
+choices available.  iWARP NICs are Ethernet-based devices (like the
+Cisco VIC).
+
+Workaround:
+The Cisco usNIC team is working on upstreaming a patch to the Linux
+community that will allow the Verbs API to correctly identify usNIC
+devices.
+
+
+ibv_devinfo (i.e., ibv_query_port() verbs API) reports the wrong MTU
+values for usNIC devices.
+-----------------------------------------------------------------
+Symptom:
+Runnning the ibv_devinfo(1) command (which uses the ibv_query_ports(3)
+API) reports the wrong MTU value for usNIC devices.
+
+Root cause:
+Similar to the "ibv_devinfo reports usNIC devices as iWARP" issue, the
+Linux Verbs API currently only allows ports to report one of the
+following MTU values: 256, 512, 1024, 2048, or 4096.  Values such as
+1500 or 9000 are not supported.
+
+Workaround:
+To obtain the actual MTU for a Cisco usNIC device, look at the MTU of
+the usNIC's corresponding ethernet interface in the Linux kernel.  For
+example, if usnic_0 corresponds to eth4, then "ip link show dev eth4"
+will show the proper MTU value:
+
+$ ip link show dev eth4
+6: eth4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9000 qdisc mq state UP qlen 1000
+    link/ether 7c:ad:74:45:d2:d1 brd ff:ff:ff:ff:ff:ff
+
+
+The Hardware Topology (hwloc) software package can be used to find out
+which ethX interface corresponds to a given usnic_Y device.  For example:
+
+$ lstopo
+[...extra output snipped...]
+              PCIBridge
+                PCI 1137:0043
+                  Net L#4 "eth4"
+                  OpenFabrics L#5 "usnic_0"
+[...extra output snipped...]
+
+The Cisco usNIC team is working on upstreaming a patch to the Linux
+community that will allow the Verbs API to correctly identify usNIC
+MTU values.

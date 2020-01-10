@@ -1,0 +1,108 @@
+/* config.h.in.  Generated from configure.ac by autoheader.  */
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#undef HAVE_DLFCN_H
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `ibverbs' library (-libverbs). */
+#undef HAVE_LIBIBVERBS
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Define to 1 if you have the <valgrind/memcheck.h> and want valgrind support
+   header file. */
+#undef HAVE_VALGRIND_MEMCHECK_H
+
+/* link to libnl3 */
+#undef LIBNL3
+
+/* Define to the sub-directory in which libtool stores uninstalled libraries.
+   */
+#undef LT_OBJDIR
+
+/* Define to 1 to disable Valgrind annotations. */
+#undef NVALGRIND
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* The size of `long', as computed by sizeof. */
+#undef SIZEOF_LONG
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Use deprecated l2 transport */
+#undef USNIC_8915
+
+/* release suffix for version */
+#undef USNIC_RELEASE
+
+/* host on which the build is made */
+#undef USNIC_REL_BUILD_HOST
+
+/* build timestamp */
+#undef USNIC_REL_BUILD_TIMESTAMP
+
+/* user who made the build */
+#undef USNIC_REL_BUILD_USER
+
+/* release date */
+#undef USNIC_REL_DATE
+
+/* SVN branch of the source */
+#undef USNIC_SVN_BRANCH
+
+/* SVN revision ranges of the source */
+#undef USNIC_SVN_REV
+
+/* base version */
+#undef USNIC_VERSION
+
+/* full version string */
+#undef USNIC_WHOLE_VERSION
+
+/* Whether we want debugging messages or not */
+#undef WANT_DEBUG_MSGS
+
+/* Define to empty if `const' does not conform to ANSI C. */
+#undef const

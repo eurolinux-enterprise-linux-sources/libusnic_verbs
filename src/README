@@ -1,0 +1,74 @@
+Linux userspace driver for the usNIC feature of the Cisco VIC SR-IOV
+Ethernet NIC
+============================
+
+Overview:
+=========
+
+libusnic_verbs is a userspace driver for the Cisco VIC SR-IOV Ethernet
+NIC.  It is a plug-in module for libibverbs that implements the
+low-latency usNIC feature of the Cisco VIC.  See the libibverbs
+library for more details.
+
+Prerequisites:
+==============
+
+To install and run the libusnic_driver, the following kernel modules
+and user space libraries must be present on the system:
+
+Kernel Modules:
+  1) enic: Linux driver for the Cisco VIC Ethernet NIC
+  2) ib_core: core infiniband kernel API module
+  3) usnic_verbs: Linux driver implementing kernel portion of usNIC
+     feature of the Cisco VIC
+  4) ib_uverbs: Linux kernel module enabling direct userspace access
+     to operating system bypass hardware via the verbs API
+
+Userspace Libraries:
+  1) libibverbs: Linux userspace library for verbs API implementation
+
+Installing the binary RPM:
+==========================
+
+Install the libusnic_verbs RPM (requires administrative privileges):
+
+   Red Hat:
+   # rpm -Uvh libusnic_verbs-<version>-1.x86_64.rpm
+
+You may need to reboot the system to have the driver installed by the
+RPM to take effect, although "service rdma restart" may be sufficient.
+
+Note, too, that you also need to provision usNIC devices on the Cisco
+VIC via the Cisco Integrated Management Controller (CIMC) or the
+Unified Compute System Manager (UCSM), or no usNIC devices be visible
+to Linux.
+
+Uninstalling the binary RPM:
+============================
+
+Uninstall using (requires administrative privileges):
+
+    Red Hat:
+    # rpm -e libusnic_verbs
+
+Building/Installing the tar ball:
+=================================
+
+    $ cp libusnic_verbs-<version>.src.tar.gz /tmp
+    $ cd /tmp
+    $ tar xf libusnic_verbs-<version>.tar.gz
+    $ cd libusnic-<version>
+    $ ./configure --prefix=/ --libdir=/usr/lib64
+    $ make
+    # make install     # requires administrative privileges
+
+Note that the prefix and libdir values are specific to RHEL 6.x.
+ 
+Using libusnic_verbs:
+=====================
+
+libusnic_verbs will be loaded and used automatically by programs
+linked with libibverbs.  The usnic_verbs.ko kernel module must be
+loaded for VIC devices to be detected and used.  The ib_uverbs kernel
+module also needs to be loaded.
+
