@@ -3,7 +3,7 @@
 
 Name: libusnic_verbs
 Version: %{lib_version}
-Release: 4%{?dist}
+Release: 5%{?dist}
 Summary: Cisco Virtual NIC OpenFabrics Userspace Driver
 Group: System Environment/Libraries
 License: GPLv2 or BSD
@@ -19,10 +19,10 @@ BuildRequires: infinipath-psm-devel >= 3.3
 ExcludeArch: s390 s390x
 
 %description
-libusnic_verbs provides a device-specific userspace driver for Cisco
-Virtual NICs for use with the libibverbs library. This package also
-includes an usnic_udp_pingpong modified from ibv_ud_pingpong that works
-with libusnic_verbs.
+This is a dummy plugin for libibverbs for Cisco usNIC devices; its only
+purpose is to avoid spurious warning messages from libibverbs when it
+sees usNIC kernel devices.  Cisco usNIC functionality is delivered
+through libfabric (instead of libibverbs).
 
 %package -n usnic-tools
 Summary: Simple utilities to test Cisco Virtual NIC operability
@@ -72,6 +72,10 @@ rm -rf %{buildroot}
 %{_bindir}/*
 
 %changelog
+* Tue Mar 21 2017 Jarod Wilson <jarod@redhat.com> - 2.0.1-5
+- Update package description to more accurately reflect functionality
+- Resolves: bz1391995
+
 * Thu Jul 07 2016 Jarod Wilson <jarod@redhat.com> - 2.0.1-4
 - Fix broken Requires: libusnic_verbs dependency in usnic-tools sub-package
 - Resolves: bz1353448
