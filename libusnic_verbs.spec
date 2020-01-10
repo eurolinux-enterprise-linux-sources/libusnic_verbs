@@ -1,17 +1,21 @@
-%global tools_version 1.0.1.237
+%global lib_version 2.0.1
+%global tools_version 1.1.1.0
 
 Name: libusnic_verbs
-Version: 1.1.0.237
+Version: %{lib_version}
 Release: 4%{?dist}
 Summary: Cisco Virtual NIC OpenFabrics Userspace Driver
 Group: System Environment/Libraries
 License: GPLv2 or BSD
 Url: http://cisco.com/
-Source0: libusnic_verbs-%{version}.tar.gz
-Source1: usnic_tools-%{tools_version}.tar.gz
-Patch0: usnic_tools-kmod.patch
+Source0: https://github.com/cisco/libusnic_verbs/releases/download/v%{lib_version}/%{name}-%{lib_version}.tar.bz2
+Source1: https://github.com/cisco/usnic_tools/releases/download/v%{tools_version}/usnic-tools-%{tools_version}.tar.bz2
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires: libibverbs-devel >= 1.1.5, libnl3-devel, valgrind-devel
+BuildRequires: libibverbs-devel >= 1.2.0, libfabric-devel >= 1.3.0
+BuildRequires: libnl3-devel, valgrind-devel
+%ifarch x86_64
+BuildRequires: infinipath-psm-devel >= 3.3
+%endif
 ExcludeArch: s390 s390x
 
 %description
@@ -20,37 +24,38 @@ Virtual NICs for use with the libibverbs library. This package also
 includes an usnic_udp_pingpong modified from ibv_ud_pingpong that works
 with libusnic_verbs.
 
-%package utils
+%package -n usnic-tools
 Summary: Simple utilities to test Cisco Virtual NIC operability
 Group: System Environment/Libraries
+Version: %{tools_version}
+Provides: libusnic_verbs-utils = 1.1.0.237-5
+Obsoletes: libusnic_verbs-utils < 1.1.0.237-5
+Requires: %{name} = %{lib_version}-%{release}
 
-%description utils
+%description -n usnic-tools
 This package includes ibv_ud_pingpong modified to work with libusnic_verbs
 devices and a few minor scripts for checking the versions of software
 installed on the machine and providing useful information to Cisco
 technical support.
 
 %prep
-%setup -q -n %{name}-%{version}.rhel7u0 -a 1
-%patch0 -p1
+%setup -q -a 1
 
 %build
 %configure --with-release=%{version} --with-valgrind
 make %{?_smp_mflags}
-cd usnic_tools-%{tools_version}.rhel7u0
-%configure --with-release=%{tools_version}
+pushd usnic-tools-%{tools_version}
+%configure
+popd
 
 %install
 rm -rf %{buildroot}
 make DESTDIR=%{buildroot} install
 # remove unpackaged files from the buildroot
 rm -f %{buildroot}%{_libdir}/*.la %{buildroot}%{_libdir}/libusnic_verbs.so
-cd usnic_tools-%{tools_version}.rhel7u0
+pushd usnic-tools-%{tools_version}
 make DESTDIR=%{buildroot} install
-mv %{buildroot}/usr/opt/cisco/usnic/bin/* %{buildroot}%{_bindir}
-rm -fr %{buildroot}/usr/opt
-mv %{buildroot}%{_bindir}/{,usnic_}tech_support_info
-chmod +x %{buildroot}%{_bindir}/*
+popd
 
 %clean
 rm -rf %{buildroot}
@@ -59,13 +64,34 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %{_libdir}/libusnic_verbs-rdmav2.so
 %{_sysconfdir}/libibverbs.d/usnic.driver
-%doc AUTHORS COPYING README KNOWN_ISSUES
+%{license} LICENSE
+%doc AUTHORS VERSION ChangeLog
 
-%files utils
+%files -n usnic-tools
 %defattr(-,root,root,-)
 %{_bindir}/*
 
 %changelog
+* Thu Jul 07 2016 Jarod Wilson <jarod@redhat.com> - 2.0.1-4
+- Fix broken Requires: libusnic_verbs dependency in usnic-tools sub-package
+- Resolves: bz1353448
+
+* Wed Jun 29 2016 Jarod Wilson <jarod@redhat.com> - 2.0.1-3
+- Add missing Requires: libusnic_verbs to usnic-tools sub-package
+- Bump to usnic-tools v1.1.1.0, drop patch that was merged upstream
+- BuildRequires: libibverbs v1.2.0 or later now, and infinipath-psm-devel
+- Related: bz1096997
+
+* Tue May 17 2016 Jarod Wilson <jarod@redhat.com> - 2.0.1-2
+- Fix getopt build failure in usnic-tools sub-package
+- Resolves: bz1096997
+
+* Tue Apr 12 2016 Jarod Wilson <jarod@redhat.com> - 2.0.1-1
+- Update to libusnic_verbs v2.0.1 and usnic-tools v1.1.0.0
+- Use actual upstream tarballs
+- Call usnic-tools usnic-tools instead of libusnic_verbs-utils
+- Resolves: bz1281635
+
 * Wed Sep 30 2015 Doug Ledford <dledford@redhat.com> - 1.1.0.237-4
 - Build against libnl3 again now that the UD RoCE bug is fixed
 - Related: bz1261028
